@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direcionamento de Entrega</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #fff; text-align: center; padding: 40px 20px; }
+    .box { background: #1e293b; padding: 30px; border-radius: 12px; max-width: 400px; margin: 0 auto; }
+    a.btn { display: inline-block; margin-top: 15px; padding: 12px 24px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2 id="casa-nome">Localizando entrega...</h2>
+    <p id="msg">Aguarde o redirecionamento automático para o GPS.</p>
+    <a id="btn-maps" class="btn" style="display:none;" href="#">Abrir Rota Manualmente</a>
+  </div>
+  <script>
+    fetch('/api/destino')
+      .then(res => res.json())
+      .then(data => {
+        if (data.link && data.link.startsWith('http')) {
+          document.getElementById('casa-nome').innerText = "Destino: " + data.casa;
+          document.getElementById('btn-maps').href = data.link;
+          document.getElementById('btn-maps').style.display = 'inline-block';
+          window.location.href = data.link;
+        } else {
+          document.getElementById('casa-nome').innerText = "Aguardando Portaria";
+          document.getElementById('msg').innerText = "Nenhuma casa selecionada no momento. Fale com o porteiro.";
+        }
+      })
+      .catch(() => {
+        document.getElementById('casa-nome').innerText = "Erro ao buscar rota";
+      });
+  </script>
+</body>
+</html>

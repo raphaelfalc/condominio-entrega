@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portaria - Mapa Virtual</title>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, sans-serif; }
+    body { background: #0f172a; color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+    h1 { font-size: 1.3rem; margin-bottom: 8px; }
+    .status-card { background: #1e293b; border: 1px solid #334155; padding: 15px 25px; border-radius: 10px; width: 100%; max-width: 600px; text-align: center; margin-bottom: 20px; }
+    .status-card span { color: #22c55e; font-size: 1.3rem; font-weight: bold; }
+    .mapa { background: #1e293b; padding: 20px; border-radius: 12px; width: 100%; max-width: 600px; border: 2px dashed #475569; }
+    .rua { font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; margin: 15px 0 8px 0; font-weight: 600; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 10px; }
+    .casa-btn { background: #334155; color: #fff; border: 2px solid #475569; padding: 14px 4px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.15s; }
+    .casa-btn:hover { background: #475569; transform: translateY(-2px); }
+    .casa-btn.ativa { background: #16a34a; border-color: #22c55e; box-shadow: 0 0 12px rgba(34, 197, 94, 0.4); }
+  </style>
+</head>
+<body>
+  <h1>Mapa de Entregas - Portaria</h1>
+  <div class="status-card">
+    Destino Ativo na Entrada:<br>
+    <span id="label-casa">Carregando...</span>
+  </div>
+  <div class="mapa">
+    <div class="rua">Quadra 01 - Alameda dos Ipês</div>
+    <div class="grid">
+      <button class="casa-btn" onclick="ativar('Casa 01', 'https://maps.google.com/?q=-23.5505,-46.6333', this)">Casa 01</button>
+      <button class="casa-btn" onclick="ativar('Casa 02', 'https://maps.google.com/?q=-23.5510,-46.6340', this)">Casa 02</button>
+      <button class="casa-btn" onclick="ativar('Casa 03', 'https://maps.google.com/?q=-23.5515,-46.6345', this)">Casa 03</button>
+      <button class="casa-btn" onclick="ativar('Casa 04', 'https://maps.google.com/?q=-23.5520,-46.6350', this)">Casa 04</button>
+    </div>
+    <div class="rua">Quadra 02 - Alameda das Palmeiras</div>
+    <div class="grid">
+      <button class="casa-btn" onclick="ativar('Casa 05', 'https://maps.google.com/?q=-23.5525,-46.6355', this)">Casa 05</button>
+      <button class="casa-btn" onclick="ativar('Casa 06', 'https://maps.google.com/?q=-23.5530,-46.6360', this)">Casa 06</button>
+      <button class="casa-btn" onclick="ativar('Casa 07', 'https://maps.google.com/?q=-23.5535,-46.6365', this)">Casa 07</button>
+      <button class="casa-btn" onclick="ativar('Casa 08', 'https://maps.google.com/?q=-23.5540,-46.6370', this)">Casa 08</button>
+    </div>
+  </div>
+  <script>
+    fetch('/api/destino')
+      .then(res => res.json())
+      .then(data => { document.getElementById('label-casa').innerText = data.casa; });
+
+    async function ativar(casa, link, btn) {
+      document.querySelectorAll('.casa-btn').forEach(b => b.classList.remove('ativa'));
+      btn.classList.add('ativa');
+      document.getElementById('label-casa').innerText = "Salvando " + casa + "...";
+      await fetch('/api/destino', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ casa, link })
+      });
+      document.getElementById('label-casa').innerText = casa;
+    }
+  </script>
+</body>
+</html>
